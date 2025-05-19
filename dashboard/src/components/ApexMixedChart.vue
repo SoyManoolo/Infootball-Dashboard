@@ -97,8 +97,22 @@ const chartOptions = computed<ApexOptions>(() => ({
   display: flex;
   flex-direction: column;
   height: 100%;
-  min-height: 290px; /* Como en el PDF */
+  min-height: 290px; /* Altura mínima base */
   width: 100%;
   padding: 16px; /* [cite: 106] */
+}
+
+/* Ajustes responsivos para diferentes tamaños de pantalla */
+@media (max-width: 768px) {
+  .box-mixedChart {
+    min-height: 350px; /* Mayor altura en pantallas medianas para mejor lectura */
+  }
+}
+
+@media (max-width: 480px) {
+  .box-mixedChart {
+    min-height: 400px; /* Aún más altura en pantallas pequeñas */
+    padding: 12px 8px; /* Reducir padding horizontal para aprovechar espacio */
+  }
 }
 </style>

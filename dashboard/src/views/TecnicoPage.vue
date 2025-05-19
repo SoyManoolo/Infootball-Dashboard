@@ -5,14 +5,14 @@
         <ion-buttons slot="start">
           <ion-menu-button color="primary"></ion-menu-button>
         </ion-buttons>
-        <ion-title>Técnico</ion-title>
+        <ion-title>Dashboard Técnico</ion-title>
       </ion-toolbar>
     </ion-header>
 
     <ion-content :fullscreen="true" class="ion-padding">
       <ion-header collapse="condense">
         <ion-toolbar>
-          <ion-title size="large">Técnico</ion-title>
+          <ion-title size="large">Técnico Infootball</ion-title>
         </ion-toolbar>
       </ion-header>
 
@@ -20,17 +20,17 @@
         <ion-row class="ion-row-1">
           <ion-col size="12" size-lg="4">
             <div class="box">
-              <SparkLine v-bind="sparkDataTech1"/>
+              <SparkLine v-bind="sparkCpuLoad"/>
             </div>
           </ion-col>
           <ion-col size="6" size-lg="4">
             <div class="box">
-              <SparkLine v-bind="sparkDataTech2"/>
+              <SparkLine v-bind="sparkRamUsage"/>
             </div>
           </ion-col>
           <ion-col size="6" size-lg="4">
             <div class="box">
-              <SparkLine v-bind="sparkDataTech3"/>
+              <SparkLine v-bind="sparkApiErrors"/>
             </div>
           </ion-col>
         </ion-row>
@@ -38,12 +38,12 @@
         <ion-row class="ion-row-2">
           <ion-col size="12" size-lg="3" push-lg="9">
             <div class="box">
-              <EchartsGauge :value="currentGaugeValue" title="USUARIOS ONLINE" />
+              <EchartsGauge :value="apiLatencyMs" title="LATENCIA API (ms)" />
             </div>
           </ion-col>
           <ion-col size="12" size-lg="9" pull-lg="3">
             <div class="box">
-              <ApexLineRT :series="apexLineSeries" title="Actividad de Usuarios (Realtime)" kpi-target="70" color="#3b82f6" />
+              <ApexLineRT :series="seriesUsuariosRealtime" title="Usuarios en Tiempo Real" kpi-target="1000" color="#10b981" />
             </div>
           </ion-col>
         </ion-row>
@@ -51,17 +51,17 @@
         <ion-row class="ion-row-3">
           <ion-col size="12" size-lg="4.5">
             <div class="box">
-              <ChartJSLineAreaRT chartType="line" title="Carga CPU (%)" color="#10b981" :realtime="true" />
+              <ChartJSLineAreaRT chartType="line" title="Peticiones API /min" color="#3b82f6" :realtime="true" :min="0" :max="5000" :delay="2000"/>
             </div>
           </ion-col>
           <ion-col size="12" size-lg="4.5">
             <div class="box">
-              <ChartJSLineAreaRT chartType="area" title="Uso de Memoria (MB)" color="#ef4444" :min="50" :max="1000" :realtime="true" />
+              <ChartJSLineAreaRT chartType="area" title="Consultas DB /s" color="#ef4444" :min="0" :max="1000" :realtime="true" :delay="1500"/>
             </div>
           </ion-col>
           <ion-col size="12" size-lg="3">
             <div class="box">
-              <EchartsGaugeMultiple :segments="ringSegmentsData" title="Rendimiento Servidores"/>
+              <EchartsGaugeMultiple :segments="segmentosSaludServidores" title="Salud Servidores (%)"/>
             </div>
           </ion-col>
         </ion-row>
@@ -72,147 +72,108 @@
 
 <script setup lang="ts">
 import {
-  IonButtons,
-  IonContent,
-  IonHeader,
-  IonMenuButton,
-  IonPage,
-  IonTitle,
-  IonToolbar,
-  IonGrid,
-  IonRow,
-  IonCol,
+  IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar,
+  IonGrid, IonRow, IonCol,
 } from '@ionic/vue';
 import { ref, onMounted, onUnmounted } from 'vue';
-import { hardwareChipOutline, serverOutline, wifiOutline } from 'ionicons/icons';
+import { hardwareChipOutline, serverOutline, alertCircleOutline } from 'ionicons/icons';
 
-// Componentes de gráficos
-import SparkLine from '../components/SparkLine.vue';
-import ApexLineRT from '../components/ApexLineRT.vue';
-import EchartsGauge from '../components/EchartsGauge.vue';
-import EchartsGaugeMultiple from '../components/EchartsGaugeMultiple.vue';
-import ChartJSLineAreaRT from '../components/ChartJSLineAreaRT.vue';
+// Componentes
+import SparkLine from '@/components/SparkLine.vue';
+import ApexLineRT from '@/components/ApexLineRT.vue';
+import EchartsGauge from '@/components/EchartsGauge.vue';
+import EchartsGaugeMultiple from '@/components/EchartsGaugeMultiple.vue';
+import ChartJSLineAreaRT from '@/components/ChartJSLineAreaRT.vue';
 
-// Constantes y Variables
-const UPDATE_INTERVAL = 1500; // Más lento para mejor visualización de cambios
-const MAX_DATA_POINTS = 30;
-let lastDate = Date.now();
+// --- DATOS EJEMPLO PARA INFOOTBALL (TÉCNICO) ---
+// TODO: Reemplazar con datos reales y lógica de obtención
+
+const UPDATE_INTERVAL = 2000;
+const MAX_DATA_POINTS_REALTIME = 30;
 let intervalId: ReturnType<typeof setInterval>;
 
-// Datos para Sparklines
-const sparkDataTech1 = ref({
-  title: "CPU LOAD",
-  value: "0%",
-  bgColor: "gradient-blue",
-  textColor: "white",
-  iconName: hardwareChipOutline,
-  chartOptions: { chart: { type: 'area' as const }, colors:['#fff'], stroke: {curve:'smooth' as const, width:2}, fill: {type:'gradient', gradient:{opacityFrom:0.6, opacityTo:0.1}}},
+// Sparklines Técnicos
+const sparkCpuLoad = ref({
+  title: "CARGA CPU SERVIDOR", value: "0%", bgColor: "gradient-blue", textColor: "white", iconName: hardwareChipOutline,
+  chartOptions: { chart: { type: 'area' as const }, colors:['#fff'], stroke: {curve:'smooth' as const, width:2}, fill: {type:'gradient',gradient:{opacityFrom:0.6, opacityTo:0.1}}},
   chartSeries: [{ name: 'CPU', data: Array(10).fill(0) }],
 });
-const sparkDataTech2 = ref({
-  title: "RAM USAGE",
-  value: "0%",
-  bgColor: "gradient-pink",
-  textColor: "white",
-  iconName: serverOutline,
+const sparkRamUsage = ref({
+  title: "USO RAM SERVIDOR", value: "0%", bgColor: "gradient-pink", textColor: "white", iconName: serverOutline,
   chartOptions: { chart: { type: 'bar' as const }, colors:['#fff'], plotOptions:{bar:{horizontal:false, columnWidth:'60%'}}, fill: {type: 'solid', opacity:0.7}},
   chartSeries: [{ name: 'RAM', data: Array(10).fill(0) }],
 });
-const sparkDataTech3 = ref({
-  title: "UPTIME",
-  value: "0d 0h",
-  bgColor: "gradient-green",
-  textColor: "white",
-  iconName: wifiOutline, //
-  chartOptions: { chart: { type: 'line' as const }, colors:['#fff'], stroke: {curve:'straight' as const, width:2}, fill: {type:'gradient', gradient:{opacityFrom:0.6, opacityTo:0.1}}},
-  chartSeries: [{ name: 'Uptime', data: Array(10).fill(100) }], // Simula 100% uptime
+const sparkApiErrors = ref({
+  title: "ERRORES API (Últ. Hora)", value: "0", bgColor: "gradient-red", textColor: "white", iconName: alertCircleOutline,
+  chartOptions: { chart: { type: 'line' as const }, colors:['#fff'], stroke: {curve:'straight' as const, width:2}, fill: {type:'gradient',gradient:{opacityFrom:0.6, opacityTo:0.1}}},
+  chartSeries: [{ name: 'Errores', data: Array(10).fill(0) }],
 });
 
-
-// Datos para ApexLineRT
-const apexLineData = ref<{ x: number; y: number }[]>(
-  Array.from({ length: MAX_DATA_POINTS }, (_, i) => ({ x: Date.now() - (MAX_DATA_POINTS - i) * UPDATE_INTERVAL, y: 0 }))
+// ApexLineRT: Usuarios en tiempo real
+const dataUsuariosRealtime = ref<{ x: number; y: number }[]>(
+  Array.from({ length: MAX_DATA_POINTS_REALTIME }, (_, i) => ({ x: Date.now() - (MAX_DATA_POINTS_REALTIME - i) * UPDATE_INTERVAL, y: 0 }))
 );
-const apexLineSeries = ref([{ name: 'Usuarios', data: apexLineData.value }]);
+const seriesUsuariosRealtime = ref([{ name: 'Usuarios Conectados', data: dataUsuariosRealtime.value }]);
 
-// Datos para ECharts Gauge Simple
-const currentGaugeValue = ref(0);
+// EchartsGauge: Latencia API
+const apiLatencyMs = ref(0);
 
-// Datos para ECharts Gauge Múltiple
-const ringSegmentsData = ref([
-  { value: 0, name: 'API Latency (ms)', color: '#f97316', min: 0, max: 500 },
-  { value: 0, name: 'DB Queries/s', color: '#10b981', min: 0, max: 1000 },
-  { value: 0, name: 'Error Rate (%)', color: '#ef4444', min: 0, max: 10 },
+// EchartsGaugeMultiple: Salud Servidores
+const segmentosSaludServidores = ref([
+  { value: 0, name: 'Servidor Web', color: '#10b981', min: 0, max: 100 },
+  { value: 0, name: 'Servidor BD', color: '#f97316', min: 0, max: 100 },
+  { value: 0, name: 'Servidor Cache', color: '#3b82f6', min: 0, max: 100 },
 ]);
 
-let uptimeSeconds = 0;
+function actualizarDatosTecnicos() {
+  const now = Date.now();
 
-function formatUptime(totalSeconds: number) {
-  const days = Math.floor(totalSeconds / (3600 * 24));
-  totalSeconds %= (3600 * 24);
-  const hours = Math.floor(totalSeconds / 3600);
-  return `${days}d ${hours}h`;
-}
+  const cpu = Math.floor(Math.random() * 100);
+  sparkCpuLoad.value = {...sparkCpuLoad.value, value: `${cpu}%`, chartSeries: [{name: 'CPU', data: [...sparkCpuLoad.value.chartSeries[0].data.slice(1), cpu]}]};
 
-function addDataRealTime() {
-  const newX = Date.now(); // Usar Date.now() para el eje X de ApexLineRT
-  const newY = Math.floor(Math.random() * 90) + 10;
+  const ram = Math.floor(Math.random() * 100);
+  sparkRamUsage.value = {...sparkRamUsage.value, value: `${ram}%`, chartSeries: [{name: 'RAM', data: [...sparkRamUsage.value.chartSeries[0].data.slice(1), ram]}]};
+  
+  const errors = Math.floor(Math.random() * 5);
+  sparkApiErrors.value = {...sparkApiErrors.value, value: `${errors}`, chartSeries: [{name: 'Errores', data: [...sparkApiErrors.value.chartSeries[0].data.slice(1), errors]}]};
 
-  // ApexLineRT
-  const newData = [...apexLineData.value, { x: newX, y: newY }];
-  if (newData.length > MAX_DATA_POINTS) {
-    newData.shift();
+  const usuarios = Math.floor(Math.random() * 1500) + 200;
+  const nuevosDatosUsuarios = [...dataUsuariosRealtime.value, { x: now, y: usuarios }];
+  if (nuevosDatosUsuarios.length > MAX_DATA_POINTS_REALTIME) {
+    nuevosDatosUsuarios.shift();
   }
-  apexLineData.value = newData;
-  apexLineSeries.value = [{ name: 'Usuarios', data: apexLineData.value }];
+  dataUsuariosRealtime.value = nuevosDatosUsuarios;
+  seriesUsuariosRealtime.value = [{ name: 'Usuarios Conectados', data: dataUsuariosRealtime.value }];
 
+  apiLatencyMs.value = Math.floor(Math.random() * 300) + 50;
 
-  // ECharts Gauge Simple
-  currentGaugeValue.value = newY;
-
-  // ECharts Gauge Múltiple
-  ringSegmentsData.value[0].value = Math.floor(Math.random() * 400) + 50; // API Latency
-  ringSegmentsData.value[1].value = Math.floor(Math.random() * 800) + 100; // DB Queries
-  ringSegmentsData.value[2].value = parseFloat((Math.random() * 5).toFixed(1)); // Error Rate
-
-  // Sparklines
-  uptimeSeconds += UPDATE_INTERVAL / 1000;
-  sparkDataTech1.value = {...sparkDataTech1.value, value: `${newY}%`, chartSeries: [{name: sparkDataTech1.value.chartSeries[0].name, data: [...sparkDataTech1.value.chartSeries[0].data.slice(1), newY]}]};
-  const newRam = Math.floor(Math.random() * 70) + 10;
-  sparkDataTech2.value = {...sparkDataTech2.value, value: `${newRam}%`, chartSeries: [{name: sparkDataTech2.value.chartSeries[0].name, data: [...sparkDataTech2.value.chartSeries[0].data.slice(1), newRam]}]};
-  sparkDataTech3.value = {...sparkDataTech3.value, value: formatUptime(uptimeSeconds)};
-  // La serie de uptime puede ser estática o mostrar alguna variación si se desea
+  segmentosSaludServidores.value.forEach(s => {
+    s.value = Math.floor(Math.random() * 20) + 80;
+  });
 }
 
 onMounted(() => {
-  // Inicializar datos para ApexLineRT para evitar que empiece vacío si MAX_DATA_POINTS es grande
-  lastDate = Date.now() - MAX_DATA_POINTS * UPDATE_INTERVAL;
-   apexLineData.value = Array.from({ length: MAX_DATA_POINTS }, () => {
-    lastDate += UPDATE_INTERVAL;
-    return { x: lastDate, y: Math.floor(Math.random()*30)+10 }; // Datos iniciales aleatorios
+  let initialTime = Date.now() - MAX_DATA_POINTS_REALTIME * UPDATE_INTERVAL;
+  dataUsuariosRealtime.value = Array.from({ length: MAX_DATA_POINTS_REALTIME }, () => {
+    initialTime += UPDATE_INTERVAL;
+    return { x: initialTime, y: Math.floor(Math.random() * 500) + 50 };
   });
-  apexLineSeries.value = [{ name: 'Usuarios', data: apexLineData.value }];
-  lastDate = Date.now(); // Resetear lastDate para las nuevas actualizaciones
-
-  intervalId = setInterval(addDataRealTime, UPDATE_INTERVAL);
+  seriesUsuariosRealtime.value = [{ name: 'Usuarios Conectados', data: dataUsuariosRealtime.value }];
+  
+  actualizarDatosTecnicos();
+  intervalId = setInterval(actualizarDatosTecnicos, UPDATE_INTERVAL);
 });
 
 onUnmounted(() => {
   clearInterval(intervalId);
 });
+
 </script>
 
 <style scoped>
-/* Mismos estilos que NegocioPage.vue para .box, ion-row, ion-col y @media */
-ion-row {
-  overflow: hidden;
-}
-
-ion-col {
-  max-height: 100%;
-  --ion-grid-column-padding: 10px;
-}
-
+/* Estilos idénticos a NegocioPage.vue para consistencia */
+ion-row { overflow: hidden; }
+ion-col { max-height: 100%; --ion-grid-column-padding: 10px; }
 .box {
   background: #1E1E1E;
   height: 100%;
@@ -226,27 +187,29 @@ ion-col {
   padding: 0;
   color: white;
   box-sizing: border-box;
+  min-height: 150px;
 }
 
 @media (min-width: 992px) {
-  ion-grid.dashboard-grid {
-    height: calc(100% - 30px);
-    display: flex;
-    flex-direction: column;
-  }
-  .ion-row-1 {
-    height: 25%;
-    max-height: 25%;
-  }
-  /* Ajuste para la Fila 2 del dashboard técnico como en el PDF (era 50%) */
-  .ion-row-2 {
-    height: 40%; /* PDF especificaba 50% para dashboard técnico, pero 40% es más consistente con la otra página y deja espacio para la fila 3 */
-    max-height: 40%;
-  }
-   /* Ajuste para la Fila 3 del dashboard técnico como en el PDF (era 30%) */
-  .ion-row-3 {
-    height: 35%; /* PDF especificaba 30% para dashboard técnico */
-    max-height: 35%;
-  }
+  ion-grid.dashboard-grid { height: calc(100% - 30px); display: flex; flex-direction: column; }
+  .ion-row-1 { height: 25%; max-height: 25%; }
+  .ion-row-1 .box { min-height: 0; }
+  .ion-row-2 { height: 40%; max-height: 40%; }
+  .ion-row-2 .box { min-height: 250px; }
+  .ion-row-3 { height: 35%; max-height: 35%; }
+  .ion-row-3 .box { min-height: 250px; }
+}
+@media (min-width: 768px) and (max-width: 991px) {
+  ion-grid.dashboard-grid { display: flex; flex-direction: column; gap: 16px; }
+  .box { min-height: 200px; }
+   .ion-row-1 .box { min-height: 150px; }
+  .ion-row-2 .box { min-height: 300px; }
+  .ion-row-3 .box { min-height: 280px; }
+}
+@media (max-width: 767px) {
+  .box { margin-bottom: 16px; min-height: 220px; }
+  .ion-row-1 .box { min-height: 180px; }
+  .ion-row-2 .box { min-height: 320px; }
+  .ion-row-3 .box { min-height: 300px; }
 }
 </style>

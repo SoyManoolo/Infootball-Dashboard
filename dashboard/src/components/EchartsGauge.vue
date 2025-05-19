@@ -70,8 +70,27 @@ watchEffect(() => { // [cite: 127, 130]
 
 <style scoped>
 .gauge-chart { /* [cite: 123] */
-  min-height: 250px; /* Ajustado del PDF para mejor visualización, el PDF dice 300px */
+  min-height: 250px; /* Altura mínima base */
   width: 100%; /* Asegura que tome el ancho del contenedor */
   height: 100%; /* Asegura que tome el alto del contenedor */
+}
+
+/* Ajustes responsivos para diferentes tamaños de pantalla */
+@media (max-width: 992px) {
+  .gauge-chart {
+    min-height: 280px; /* Mayor altura en tablets */
+  }
+}
+
+@media (max-width: 768px) {
+  .gauge-chart {
+    min-height: 300px; /* Aún más altura en pantallas más pequeñas */
+  }
+}
+
+@media (max-width: 480px) {
+  .gauge-chart {
+    min-height: 260px; /* Altura optimizada para móviles */
+  }
 }
 </style>

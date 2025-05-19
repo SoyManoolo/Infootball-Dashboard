@@ -124,4 +124,23 @@ watchEffect(() => {
   width: 100%;
   height: 100%;
 }
+
+/* Ajustes responsivos para diferentes tamaños de pantalla */
+@media (max-width: 992px) {
+  .gauge-multiple-chart {
+    min-height: 300px; /* Más altura en tablets */
+  }
+}
+
+@media (max-width: 768px) {
+  .gauge-multiple-chart {
+    min-height: 350px; /* Mucho más altura en pantallas más pequeñas para mejor visualización */
+  }
+}
+
+@media (max-width: 576px) {
+  .gauge-multiple-chart {
+    min-height: 320px; /* Altura optimizada para móviles */
+  }
+}
 </style>
