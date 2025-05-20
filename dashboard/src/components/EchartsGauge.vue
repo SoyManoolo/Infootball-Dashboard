@@ -2,63 +2,63 @@
   <VEChart class="gauge-chart" :option="options" autoresize /> </template>
 
 <script setup lang="ts">
-import { ref, watchEffect, defineProps } from 'vue'; // [cite: 127] (onMounted no es necesario aquí como en el Geomap)
-import { use } from "echarts/core"; // [cite: 116]
-import { GaugeChart } from "echarts/charts"; // [cite: 116]
-import { CanvasRenderer } from "echarts/renderers"; // [cite: 116]
-import { TooltipComponent } from "echarts/components"; // [cite: 117]
-import VEChart from "vue-echarts"; // [cite: 116]
+import { ref, watchEffect, defineProps } from 'vue';
+import { use } from "echarts/core";
+import { GaugeChart } from "echarts/charts";
+import { CanvasRenderer } from "echarts/renderers";
+import { TooltipComponent } from "echarts/components";
+import VEChart from "vue-echarts";
 
-use([GaugeChart, CanvasRenderer, TooltipComponent]); // [cite: 117]
+use([GaugeChart, CanvasRenderer, TooltipComponent]);
 
-const props = defineProps<{ value: number, title?: string }>(); // [cite: 125]
+const props = defineProps<{ value: number, title?: string }>();
 
-const options = ref({}); // [cite: 127]
+const options = ref({});
 
-watchEffect(() => { // [cite: 127, 130]
+watchEffect(() => {
   options.value = {
-    series: [ // [cite: 127]
+    series: [
       {
-        type: 'gauge', // [cite: 128, 132]
-        center: ['50%', '55%'], // [cite: 128, 132]
-        radius: '95%', // [cite: 128, 132]
-        min: 0, // [cite: 128, 133]
-        max: 100, // [cite: 128, 133]
-        axisLine: { // [cite: 128]
+        type: 'gauge',
+        center: ['50%', '55%'],
+        radius: '95%',
+        min: 0,
+        max: 100,
+        axisLine: {
           lineStyle: {
             width: 20,
-            color: [ // [cite: 128, 133]
+            color: [
               [0.2, "#ff4d4d"],
-              [0.69, "#ffa500"], // PDF dice 0.79, pero el color cambia a naranja en 0.69
+              [0.69, "#ffa500"],
               [1, "#4caf50"],
             ]
           }
         },
-        pointer: { itemStyle: { color: 'auto' }, length: '60%' }, // [cite: 128, 133]
-        axisTick: { distance: -20, length: 4, lineStyle: { color: '#fff', width: 1 } }, // [cite: 128, 133]
-        splitLine: { distance: -20, length: 20, lineStyle: { color: '#fff', width: 2 } }, // [cite: 128]
-        axisLabel: { // [cite: 128]
+        pointer: { itemStyle: { color: 'auto' }, length: '60%' },
+        axisTick: { distance: -20, length: 4, lineStyle: { color: '#fff', width: 1 } },
+        splitLine: { distance: -20, length: 20, lineStyle: { color: '#fff', width: 2 } },
+        axisLabel: {
           color: 'inherit',
           distance: 28,
           fontSize: 15,
-          formatter: function (value: number) { // [cite: 128, 133]
+          formatter: function (value: number) {
             return value % 20 === 0 ? value.toString() : "";
           }
         },
-        detail: { // [cite: 129]
-          valueAnimation: true, // [cite: 129, 133]
-          formatter: '{value}', // [cite: 129, 133]
+        detail: {
+          valueAnimation: true,
+          formatter: '{value}',
           color: 'inherit',
           fontSize: 25,
           offsetCenter: [0, '20%']
         },
-        data: [ // [cite: 129]
+        data: [
           {
             value: props.value,
-            name: props.title ?? 'KPI', // [cite: 129, 133]
-            title: { // [cite: 129]
+            name: props.title ?? 'KPI',
+            title: {
               color: '#8C8C8C',
-              offsetCenter: [0, "72%"] // [cite: 129, 133]
+              offsetCenter: [0, "72%"]
             }
           }
         ]
@@ -69,7 +69,7 @@ watchEffect(() => { // [cite: 127, 130]
 </script>
 
 <style scoped>
-.gauge-chart { /* [cite: 123] */
+.gauge-chart {
   min-height: 250px; /* Altura mínima base */
   width: 100%; /* Asegura que tome el ancho del contenedor */
   height: 100%; /* Asegura que tome el alto del contenedor */

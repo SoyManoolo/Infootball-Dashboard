@@ -13,10 +13,6 @@ import Chart from 'chart.js/auto';
 import 'chartjs-adapter-date-fns'; // Adaptador de fecha para Chart.js
 import StreamingPlugin from 'chartjs-plugin-streaming'; // Plugin de streaming
 
-// Registrar el plugin de streaming globalmente para Chart.js si no se ha hecho
-// o se puede registrar por instancia, pero el PDF lo suele mostrar global.
-// Si ya está registrado en main.ts o similar, no es necesario aquí.
-// Por seguridad, lo registramos aquí si no lo está.
 if (!(Chart.registry.plugins as any).get('streaming')) { // Evitar registrar múltiples veces
  Chart.register(StreamingPlugin);
 }

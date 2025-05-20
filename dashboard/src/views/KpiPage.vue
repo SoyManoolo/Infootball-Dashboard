@@ -64,13 +64,13 @@ import {
   IonPage,
   IonTitle,
   IonToolbar,
-  IonAccordionGroup, // [cite: 45, 47]
-  IonAccordion,    // [cite: 45, 47]
-  IonItem,         // [cite: 45, 47]
-  IonLabel,        // [cite: 45, 47]
-  IonList          // [cite: 64, 66]
+  IonAccordionGroup,
+  IonAccordion,
+  IonItem,
+  IonLabel,
+  IonList
 } from '@ionic/vue';
-import { ref } from 'vue'; // [cite: 67]
+import { ref } from 'vue';
 
 // Definición de la estructura de datos para un objetivo SMART [cite: 67]
 interface SmartElement {
@@ -99,7 +99,6 @@ const smartGoalsNegocio = ref<SmartGoal[]>([
       { letter: "T", content: "en los siguientes 30 días" } // [cite: 68]
     ]
   },
-  // ... más KPIs de negocio
 ]);
 
 // Array de objetivos SMART para Técnico (ejemplo) - Deberías definir datos similares para los KPIs técnicos
@@ -116,12 +115,11 @@ const smartGoalsTecnico = ref<SmartGoal[]>([
       { letter: "T", content: "Próximos 2 meses" }
     ]
   },
-  // ... más KPIs técnicos
 ]);
 
 </script>
 
-<style scoped> /* [cite: 47, 72, 87] */
+<style scoped>
 ion-accordion.accordion-collapsing ion-item[slot='header'],
 ion-accordion.accordion-collapsed ion-item[slot='header'] {
   --background: var(--ion-color-light);
@@ -129,7 +127,7 @@ ion-accordion.accordion-collapsed ion-item[slot='header'] {
 }
 
 ion-accordion.accordion-expanding ion-item[slot='header'],
-ion-accordion.accordion-expanded ion-item[slot='header'] { /* [cite: 48, 73] */
+ion-accordion.accordion-expanded ion-item[slot='header'] {
   --background: rgba(var(--ion-color-primary-rgb), 0.14);
   --color: var(--ion-color-primary);
 }

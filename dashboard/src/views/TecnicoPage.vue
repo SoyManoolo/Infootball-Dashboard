@@ -86,7 +86,6 @@ import EchartsGaugeMultiple from '@/components/EchartsGaugeMultiple.vue';
 import ChartJSLineAreaRT from '@/components/ChartJSLineAreaRT.vue';
 
 // --- DATOS EJEMPLO PARA INFOOTBALL (TÉCNICO) ---
-// TODO: Reemplazar con datos reales y lógica de obtención
 
 const UPDATE_INTERVAL = 2000;
 const MAX_DATA_POINTS_REALTIME = 30;
@@ -133,7 +132,7 @@ function actualizarDatosTecnicos() {
 
   const ram = Math.floor(Math.random() * 100);
   sparkRamUsage.value = {...sparkRamUsage.value, value: `${ram}%`, chartSeries: [{name: 'RAM', data: [...sparkRamUsage.value.chartSeries[0].data.slice(1), ram]}]};
-  
+
   const errors = Math.floor(Math.random() * 5);
   sparkApiErrors.value = {...sparkApiErrors.value, value: `${errors}`, chartSeries: [{name: 'Errores', data: [...sparkApiErrors.value.chartSeries[0].data.slice(1), errors]}]};
 
@@ -159,7 +158,7 @@ onMounted(() => {
     return { x: initialTime, y: Math.floor(Math.random() * 500) + 50 };
   });
   seriesUsuariosRealtime.value = [{ name: 'Usuarios Conectados', data: dataUsuariosRealtime.value }];
-  
+
   actualizarDatosTecnicos();
   intervalId = setInterval(actualizarDatosTecnicos, UPDATE_INTERVAL);
 });
@@ -171,7 +170,6 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-/* Estilos idénticos a NegocioPage.vue para consistencia */
 ion-row { overflow: hidden; }
 ion-col { max-height: 100%; --ion-grid-column-padding: 10px; }
 .box {

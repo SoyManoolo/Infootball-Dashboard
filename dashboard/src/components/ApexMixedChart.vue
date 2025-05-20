@@ -4,31 +4,31 @@
 </template>
 
 <script setup lang="ts">
-import VueApexCharts from 'vue3-apexcharts'; // [cite: 98]
-import { withDefaults, defineProps, computed } from 'vue'; // [cite: 98]
+import VueApexCharts from 'vue3-apexcharts';
+import { withDefaults, defineProps, computed } from 'vue';
 import type { ApexOptions } from 'apexcharts';
 
-const props = withDefaults(defineProps<{ // [cite: 100]
+const props = withDefaults(defineProps<{
   series: ApexAxisChartSeries | ApexNonAxisChartSeries;
   options?: ApexOptions;
 }>(), {
   options: () => ({}) // Proporcionar un valor por defecto vacío
 });
 
-// Opciones por defecto combinadas con las props [cite: 101]
+// Opciones por defecto combinadas con las props
 const chartOptions = computed<ApexOptions>(() => ({
   chart: {
     type: 'line',
     stacked: false,
-    background: 'transparent', // [cite: 101]
+    background: 'transparent',
     toolbar: { show: true },
     zoom: { enabled: true }
   },
-  theme: { // [cite: 101]
+  theme: {
     mode: 'dark',
     palette: 'palette1',
   },
-  title: { // [cite: 101]
+  title: {
     text: props.options?.title?.text || 'Mixed Chart',
     align: 'left',
     style: {
@@ -37,16 +37,16 @@ const chartOptions = computed<ApexOptions>(() => ({
       color: '#8C8C8C',
     },
   },
-  stroke: { // [cite: 101]
+  stroke: {
     width: [0, 2, 4],
     curve: 'smooth'
   },
-  plotOptions: { // [cite: 101]
+  plotOptions: {
     bar: {
       columnWidth: '50%'
     }
   },
-  fill: { // [cite: 101]
+  fill: {
     opacity: [0.85, 0.25, 1],
     gradient: {
       inverseColors: false,
@@ -57,49 +57,49 @@ const chartOptions = computed<ApexOptions>(() => ({
       stops: [0, 100, 100, 100],
     }
   },
-  labels: props.options?.labels || [ // [cite: 101]
+  labels: props.options?.labels || [
     '01/01/2003', '02/01/2003', '03/01/2003', '04/01/2003', '05/01/2003', '06/01/2003', '07/01/2003', '08/01/2003', '09/01/2003', '10/01/2003', '11/01/2003'
   ],
-  markers: { size: 0 }, // [cite: 101]
-  xaxis: { // [cite: 101]
+  markers: { size: 0 },
+  xaxis: {
     type: 'datetime',
-    labels: { style: { colors: '#8C8C8C'} } // [cite: 102]
+    labels: { style: { colors: '#8C8C8C'} }
   },
-  yaxis: { // [cite: 102]
+  yaxis: {
     labels: { style: {colors: '#8C8C8C'}},
     title: {
       text: 'Points',
-      style: { color: '#BCBCBC', fontWeight: 'normal' } // [cite: 102]
+      style: { color: '#BCBCBC', fontWeight: 'normal' }
     },
   },
-  tooltip: { // [cite: 102]
+  tooltip: {
     enabled: true,
     shared: true,
-    theme: 'dark', // [cite: 103]
+    theme: 'dark',
     intersect: false,
     y: {
-      formatter: (y: number | null) => y !== null ? `${y.toFixed(0)} points` : '-' // [cite: 103]
+      formatter: (y: number | null) => y !== null ? `${y.toFixed(0)} points` : '-'
     }
   },
-  grid: { // [cite: 102]
+  grid: {
     show: true,
     borderColor: '#555',
   },
-  legend: { // [cite: 102]
+  legend: {
     position: 'top'
   },
   ...props.options // Permite sobreescribir o añadir opciones específicas
 }));
 </script>
 
-<style scoped> /* [cite: 105] */
+<style scoped>
 .box-mixedChart {
   display: flex;
   flex-direction: column;
   height: 100%;
   min-height: 290px; /* Altura mínima base */
   width: 100%;
-  padding: 16px; /* [cite: 106] */
+  padding: 16px;
 }
 
 /* Ajustes responsivos para diferentes tamaños de pantalla */

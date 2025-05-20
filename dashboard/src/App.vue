@@ -38,7 +38,7 @@ import {
   IonSplitPane,
 } from '@ionic/vue';
 import { ref, onMounted, watch } from 'vue';
-import { useRoute } from 'vue-router'; // [cite: 22]
+import { useRoute } from 'vue-router';
 import { rocketOutline, rocketSharp, pulseOutline, pulseSharp, speedometerOutline, speedometerSharp } from 'ionicons/icons';
 
 const selectedIndex = ref(0);
@@ -63,9 +63,9 @@ const appPages = [
   },
 ];
 
-const route = useRoute(); // [cite: 22]
+const route = useRoute();
 
-// Función para actualizar el selectedIndex según la URL actual [cite: 17]
+// Función para actualizar el selectedIndex según la URL actual
 const updateSelectedIndex = () => {
   const currentPath = route.path;
   const index = appPages.findIndex(page => page.url === currentPath);
@@ -74,7 +74,7 @@ const updateSelectedIndex = () => {
   }
 };
 
-// Ejecutar cuando la app carga [cite: 18]
+// Ejecutar cuando la app carga
 onMounted(updateSelectedIndex);
 
 // Ejecutar cada vez que cambia la ruta [cite: 19]
@@ -85,95 +85,95 @@ watch(route, updateSelectedIndex);
 <style scoped>
 /* Estilos del menú (simplificado del PDF) */
 ion-split-pane {
-  --side-max-width: 280px; /* [cite: 13] */
+  --side-max-width: 280px;
 }
 
 ion-menu ion-content {
   --background: var(--ion-item-background, var(--ion-background-color, #fff));
 }
 
-ion-menu.md ion-content { /* [cite: 23] */
+ion-menu.md ion-content {
   --padding-start: 8px;
   --padding-end: 8px;
   --padding-top: 20px;
   --padding-bottom: 20px;
 }
 
-ion-menu.md ion-list { /* [cite: 24] */
+ion-menu.md ion-list {
   padding: 20px 0;
 }
 
-ion-menu.md ion-note { /* [cite: 24] */
+ion-menu.md ion-note {
   margin-bottom: 30px;
   padding-left: 10px;
 }
 
-ion-menu.md ion-list-header { /* [cite: 24] */
+ion-menu.md ion-list-header {
   font-size: 22px;
   font-weight: 600;
   min-height: 20px;
   padding-left: 10px;
 }
 
-ion-menu.md ion-item { /* [cite: 24] */
+ion-menu.md ion-item {
   --padding-start: 10px;
   --padding-end: 10px;
   border-radius: 4px;
 }
 
-ion-menu.md ion-item.selected { /* [cite: 24] */
+ion-menu.md ion-item.selected {
   --background: rgba(var(--ion-color-primary-rgb), 0.14);
 }
 
-ion-menu.md ion-item.selected ion-icon { /* [cite: 25] */
+ion-menu.md ion-item.selected ion-icon {
   color: var(--ion-color-primary);
 }
 
-ion-menu.md ion-item ion-icon { /* [cite: 25] */
+ion-menu.md ion-item ion-icon {
   color: #616e7e;
 }
 
-ion-menu.md ion-item ion-label { /* [cite: 25] */
+ion-menu.md ion-item ion-label {
   font-weight: 500;
 }
 
-/* Estilos iOS del menú (simplificado del PDF) */
-ion-menu.ios ion-content { /* [cite: 25] */
+/* Estilos iOS del menú */
+ion-menu.ios ion-content {
   --padding-bottom: 20px;
 }
 
-ion-menu.ios ion-list { /* [cite: 26] */
+ion-menu.ios ion-list {
   padding: 20px 0 0 0;
 }
 
-ion-menu.ios ion-note { /* [cite: 26] */
+ion-menu.ios ion-note {
   line-height: 24px;
   margin-bottom: 20px;
-  padding-left: 16px; /* [cite: 28] */
-  padding-right: 16px; /* [cite: 28] */
+  padding-left: 16px;
+  padding-right: 16px;
 }
 
-ion-menu.ios ion-item { /* [cite: 26] */
+ion-menu.ios ion-item {
   --padding-start: 16px;
   --padding-end: 16px;
-  --min-height: 50px; /* [cite: 27] */
+  --min-height: 50px;
 }
 
-ion-menu.ios ion-item.selected ion-icon { /* [cite: 27] */
+ion-menu.ios ion-item.selected ion-icon {
   color: var(--ion-color-primary);
 }
 
-ion-menu.ios ion-item ion-icon { /* [cite: 27] */
+ion-menu.ios ion-item ion-icon {
   font-size: 24px;
   color: #73849a;
 }
 
-ion-menu.ios ion-list-header { /* [cite: 28] */
+ion-menu.ios ion-list-header {
  padding-left: 16px;
  padding-right: 16px;
 }
 
-ion-item.selected { /* [cite: 29] */
+ion-item.selected {
   --color: var(--ion-color-primary);
 }
 </style>

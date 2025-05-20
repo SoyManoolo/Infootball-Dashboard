@@ -88,7 +88,6 @@ import EchartsMap from '@/components/EchartsMap.vue';
 import type { ApexOptions } from 'apexcharts';
 
 // --- DATOS EJEMPLO PARA INFOOTBALL ---
-// TODO: Reemplazar con datos reales de tu backend/API de Infootball
 
 const sparkUsuariosActivos = ref({
   title: "USUARIOS ACTIVOS HOY",

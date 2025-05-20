@@ -39,7 +39,7 @@ watchEffect(() => {
     const startAngle = -180 + (-90 + index * (180 / total));
     const endAngle = -180 + (-90 + (index + 1) * (180 / total));
     const radius = 80 - (index * 5); // Reducimos ligeramente el tamaño de cada gauge
-    
+
     return {
       type: 'gauge',
       min: segment.min,
