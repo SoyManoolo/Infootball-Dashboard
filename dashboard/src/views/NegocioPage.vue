@@ -77,7 +77,7 @@ import {
   IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar,
   IonGrid, IonRow, IonCol,
 } from '@ionic/vue';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue'; // <--- Añadido onUnmounted
 import { statsChartOutline, personAddOutline, trophyOutline, handRightOutline } from 'ionicons/icons';
 
 // Componentes de Gráficos
@@ -86,6 +86,9 @@ import ApexMixedChart from '@/components/ApexMixedChart.vue';
 import EchartsGauge from '@/components/EchartsGauge.vue';
 import EchartsMap from '@/components/EchartsMap.vue';
 import type { ApexOptions } from 'apexcharts';
+
+const UPDATE_NEGOCIO_INTERVAL = 2500; // Intervalo para actualizar datos de negocio (más lento que técnico)
+let negocioIntervalId: ReturnType<typeof setInterval>;
 
 // --- DATOS EJEMPLO PARA INFOOTBALL ---
 
@@ -96,7 +99,7 @@ const sparkUsuariosActivos = ref({
   textColor: "white",
   iconName: statsChartOutline,
   chartOptions: { chart: { type: 'area' as const }, stroke: { curve: 'smooth' as const, width: 3}, colors:['#fff'], fill: {type:'gradient', gradient: {opacityFrom: 0.7, opacityTo: 0.1}}},
-  chartSeries: [{ name: 'Actividad', data: [25, 66, 41, 89, 60, 44, 12, 36, 50, 21] }],
+  chartSeries: [{ name: 'Actividad', data: Array(10).fill(0).map(() => Math.floor(Math.random() * 80) + 20) }], // Datos iniciales aleatorios
 });
 
 const sparkNuevosRegistros = ref({
@@ -106,17 +109,17 @@ const sparkNuevosRegistros = ref({
   textColor: "white",
   iconName: personAddOutline,
   chartOptions: { chart: { type: 'bar' as const }, colors:['#fff'], stroke: {width:0}, fill: {type: 'solid', opacity:0.6}},
-  chartSeries: [{ name: 'Registros', data: [5, 8, 3, 12, 7, 10, 6, 2, 5] }],
+  chartSeries: [{ name: 'Registros', data: Array(10).fill(0).map(() => Math.floor(Math.random() * 15)) }],
 });
 
-const sparkLigasSeguidas = ref({
+const sparkLigasSeguidas = ref({ // Este podría no ser en tiempo real, sino actualizarse menos frecuentemente
   title: "LIGAS MÁS SEGUIDAS",
   value: "LaLiga",
   bgColor: "gradient-orange",
   textColor: "white",
   iconName: trophyOutline,
   chartOptions: { chart: { type: 'line' as const }, stroke: { curve: 'straight' as const, width: 2}, colors:['#fff'], fill: {type:'solid', opacity:0.3}},
-  chartSeries: [{ name: 'Interés', data: [60, 65, 70, 68, 72, 75, 73] }],
+  chartSeries: [{ name: 'Interés', data: [60, 65, 70, 68, 72, 75, 73, 70, 76, 80] }],
 });
 
 const sparkInteracciones = ref({
@@ -126,9 +129,10 @@ const sparkInteracciones = ref({
   textColor: "white",
   iconName: handRightOutline,
   chartOptions: { chart: { type: 'area' as const }, stroke: { curve: 'stepline' as const, width: 2}, colors:['#fff'], fill: {type:'gradient', gradient: {opacityFrom: 0.7, opacityTo: 0.1}}},
-  chartSeries: [{ name: 'Interacciones', data: [300, 450, 400, 600, 550, 700, 650] }],
+  chartSeries: [{ name: 'Interacciones', data: Array(10).fill(0).map(() => Math.floor(Math.random() * 500) + 100) }],
 });
 
+// Datos para ApexMixedChart (generalmente no se actualizan cada segundo)
 const seriesCrecimientoUsuarios = ref([
   {
     name: 'Usuarios Activos Mensuales',
@@ -151,9 +155,11 @@ const optionsCrecimientoUsuarios = ref<ApexOptions>({
   tooltip: { y: { formatter: (val: number) => val.toLocaleString() } },
 });
 
+// Datos para Gauges
 const tasaRetencion = ref(75);
 const featureAdoptionRate = ref(45);
 
+// Datos para Mapa (generalmente no se actualizan cada segundo)
 const datosMapaLigas = ref([
   { name: "Spain", value: 50000 },
   { name: "United Kingdom", value: 45000 },
@@ -164,19 +170,54 @@ const datosMapaLigas = ref([
   { name: "Netherlands", value: 12000 },
 ]);
 
+function actualizarDatosNegocio() {
+  // Actualizar SparkLine Usuarios Activos
+  const nuevosUsuariosActivosVal = Math.floor(Math.random() * 500) + 1000;
+  const nuevaSerieUsuariosActivos = [...sparkUsuariosActivos.value.chartSeries[0].data.slice(1), Math.floor(Math.random() * 80) + 20];
+  sparkUsuariosActivos.value = {
+    ...sparkUsuariosActivos.value,
+    value: nuevosUsuariosActivosVal.toLocaleString(),
+    chartSeries: [{ name: 'Actividad', data: nuevaSerieUsuariosActivos }]
+  };
+
+  // Actualizar SparkLine Nuevos Registros
+  const nuevosRegistrosVal = Math.floor(Math.random() * 100);
+  const nuevaSerieNuevosRegistros = [...sparkNuevosRegistros.value.chartSeries[0].data.slice(1), nuevosRegistrosVal];
+  sparkNuevosRegistros.value = {
+    ...sparkNuevosRegistros.value,
+    value: nuevosRegistrosVal.toString(),
+    chartSeries: [{ name: 'Registros', data: nuevaSerieNuevosRegistros }]
+  };
+
+  // Actualizar SparkLine Interacciones
+  const nuevasInteraccionesVal = Math.floor(Math.random() * 2000) + 9000;
+  const nuevaSerieInteracciones = [...sparkInteracciones.value.chartSeries[0].data.slice(1), Math.floor(Math.random() * 700) + 200];
+  sparkInteracciones.value = {
+    ...sparkInteracciones.value,
+    value: `${(nuevasInteraccionesVal / 1000).toFixed(1)}K`,
+    chartSeries: [{ name: 'Interacciones', data: nuevaSerieInteracciones }]
+  };
+
+  // Actualizar Gauges
+  tasaRetencion.value = Math.floor(Math.random() * 30) + 60; // 60-90%
+  featureAdoptionRate.value = Math.floor(Math.random() * 50) + 25; // 25-75%
+
+  // Podrías actualizar sparkLigasSeguidas o datosMapaLigas con menos frecuencia o de otra forma
+}
+
 onMounted(() => {
-  // Simulación de actualización de datos después de un tiempo para demostración
-  setTimeout(() => {
-    sparkUsuariosActivos.value.value = "1,350";
-    sparkUsuariosActivos.value.chartSeries = [{ name: 'Actividad', data: [30, 70, 45, 90, 65, 50, 20, 40, 55, 25] }];
-    tasaRetencion.value = 78;
-    featureAdoptionRate.value = 48;
-  }, 3000);
+  actualizarDatosNegocio(); // Llama una vez al montar para datos iniciales aleatorios
+  negocioIntervalId = setInterval(actualizarDatosNegocio, UPDATE_NEGOCIO_INTERVAL);
+});
+
+onUnmounted(() => {
+  clearInterval(negocioIntervalId); // Limpiar el intervalo al desmontar
 });
 
 </script>
 
 <style scoped>
+/* Estilos idénticos a la respuesta anterior, asegurando consistencia */
 .dashboard-container {
   display: flex;
   flex-direction: column;
@@ -215,20 +256,15 @@ ion-col {
 }
 
 @media (min-width: 992px) {
-  .ion-row-1 {
-    min-height: 140px;
-  }
-  .ion-row-1 .box {
-    min-height: 130px;
-  }
-  .ion-row-2 {
-    min-height: 280px;
-  }
-  .ion-row-3 {
-    min-height: 300px;
-  }
+  .ion-row { flex-shrink: 0; }
+  .ion-row-1 { height: 25%; }
+  .ion-row-1 .box { min-height: 130px; }
+  .ion-row-2 { height: 35%; }
+  .ion-row-2 .box { min-height: 220px; } /* Reducido para dar más espacio a la fila 3 si es necesario */
+  .ion-row-3 { height: 40%; }
+  .ion-row-3 .box { min-height: 240px; } /* Reducido ligeramente */
   .box-map, .box-gauge-bottom {
-    min-height: 300px;
+    min-height: 240px; /* Ajustado */
   }
 }
 
@@ -237,16 +273,18 @@ ion-col {
   .box { min-height: 180px; }
   .ion-row-1 .box { min-height: 140px; }
   .ion-row-2 .box { min-height: 280px; }
-  .ion-row-3 .box { min-height: 320px; }
-  .box-map, .box-gauge-bottom { min-height: 320px; }
+  .ion-row-3 .box { min-height: 300px; } /* Reducido ligeramente */
+  .box-map, .box-gauge-bottom { min-height: 300px; }
 }
 
 @media (max-width: 767px) {
-  .box { margin-bottom: 16px; min-height: 250px; }
-  .ion-row-1 .box { min-height: 150px; }
-  .ion-row-2 .box { min-height: 300px; }
-  .ion-row-3 .box { min-height: 300px; }
-  .box-map { min-height: 320px; }
-  .box-gauge-bottom { min-height: 280px; }
+  .box { margin-bottom: 16px; /* No height 100% aquí */ }
+  .ion-row-1 .box { min-height: 150px; height: 150px; }
+  .ion-row-2 .box { min-height: 280px; } /* ApexMixedChart y EchartsGauge */
+  .ion-row-2 ion-col[size-lg="3"] .box { height: 220px; min-height: 220px; } /* EchartsGauge */
+
+  .ion-row-3 .box { min-height: 280px; } /* EchartsMap y EchartsGauge */
+  .box-map { min-height: 300px; }
+  .box-gauge-bottom { min-height: 260px; }
 }
 </style>
