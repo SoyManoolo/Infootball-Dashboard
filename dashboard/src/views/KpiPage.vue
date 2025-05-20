@@ -72,7 +72,7 @@ import {
 } from '@ionic/vue';
 import { ref } from 'vue';
 
-// Definición de la estructura de datos para un objetivo SMART [cite: 67]
+// Definición de la estructura de datos para un objetivo SMART
 interface SmartElement {
   letter: string;
   content: string;
@@ -85,18 +85,18 @@ interface SmartGoal {
   smart: SmartElement[];
 }
 
-// Array de objetivos SMART para Negocio (ejemplo) [cite: 67, 77, 78]
+// Array de objetivos SMART para Negocio (ejemplo)
 const smartGoalsNegocio = ref<SmartGoal[]>([
   {
     id: 1,
     title: "Aumentar visitas",
-    description: "Aumentar las visitas de nuestro sitio web en un 50%...", // [cite: 67]
+    description: "Aumentar las visitas de nuestro sitio web en un 50%...",
     smart: [
-      { letter: "S", content: "Aumentar las visitas de nuestro sitio web en un 50%" }, // [cite: 67]
-      { letter: "M", content: "50% (de 1,000 a 1,500)" }, // [cite: 67]
-      { letter: "A", content: "duplicando la distribución de contenido" }, // [cite: 68]
-      { letter: "R", content: "para prepararnos para el lanzamiento de nuestro nuevo producto." }, // [cite: 68]
-      { letter: "T", content: "en los siguientes 30 días" } // [cite: 68]
+      { letter: "S", content: "Aumentar las visitas de nuestro sitio web en un 50%" },
+      { letter: "M", content: "50% (de 1,000 a 1,500)" },
+      { letter: "A", content: "duplicando la distribución de contenido" },
+      { letter: "R", content: "para prepararnos para el lanzamiento de nuestro nuevo producto." },
+      { letter: "T", content: "en los siguientes 30 días" }
     ]
   },
 ]);

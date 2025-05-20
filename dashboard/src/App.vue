@@ -77,7 +77,7 @@ const updateSelectedIndex = () => {
 // Ejecutar cuando la app carga
 onMounted(updateSelectedIndex);
 
-// Ejecutar cada vez que cambia la ruta [cite: 19]
+// Ejecutar cada vez que cambia la ruta
 watch(route, updateSelectedIndex);
 
 </script>

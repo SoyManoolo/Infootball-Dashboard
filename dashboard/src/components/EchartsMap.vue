@@ -8,8 +8,8 @@ import VEChart from "vue-echarts";
 import * as echarts from "echarts/core";
 import { MapChart } from 'echarts/charts';
 import { CanvasRenderer } from 'echarts/renderers';
-import { TooltipComponent, VisualMapComponent, TitleComponent, ToolboxComponent } from 'echarts/components'; // [cite: 149]
-import europeMapData from '../assets/europe.geo.json'; // [cite: 149] (Ruta actualizada a relativa)
+import { TooltipComponent, VisualMapComponent, TitleComponent, ToolboxComponent } from 'echarts/components';
+import europeMapData from '../assets/europe.geo.json';// (Ruta actualizada a relativa)
 
 echarts.use([MapChart, CanvasRenderer, TooltipComponent, VisualMapComponent, TitleComponent, ToolboxComponent]);
 
