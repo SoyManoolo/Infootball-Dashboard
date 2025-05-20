@@ -166,8 +166,6 @@ const datosMapaLigas = ref([
   { name: "Italy", value: 30000 },
   { name: "Germany", value: 28000 },
   { name: "France", value: 25000 },
-  { name: "Portugal", value: 15000 },
-  { name: "Netherlands", value: 12000 },
 ]);
 
 function actualizarDatosNegocio() {
